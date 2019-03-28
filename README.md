@@ -3,11 +3,12 @@
 A banking service developed using Spring, but still a lot to learn in using Spring and a lot left to finish this project
 
 The banking services can be accesed through Swagger:
-## Accessing:
-employee apis: 
+
+## Employee apis: 
 - http://localhost:8080/swagger-ui.html#/Account
 - http://localhost:8080/swagger-ui.html#/Client
-admin apis:
+
+## Admin apis:
 - http://localhost:8080/swagger-ui.html#/Employee
 
 ## Calling the service apis:
