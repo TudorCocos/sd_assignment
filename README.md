@@ -13,3 +13,5 @@ The banking services can be accesed through Swagger:
 
 ## Calling the service apis:
 - each api call is protected with credentials that are stored in the database
+
+!Note: the database script in /sqlscript is not up-to-date as it does not contain the employee table
