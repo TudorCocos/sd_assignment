@@ -27,7 +27,7 @@ admin apis:
 ## Calling the service apis:
 - each api call is protected with credentials that are saved in the employee_table of the database
 
-## What you can do:
+## What can you do:
 - perform CRUD operations on Accounts and Clients by being logged in as an EMPLOYEE
 - perform CRUD operations Employees if you are logged in as an ADMIN
 - as an EMPLOYEE, you can also add or delete accounts that are associated with a client
