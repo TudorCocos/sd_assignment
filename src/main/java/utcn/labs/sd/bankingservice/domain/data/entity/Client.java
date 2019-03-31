@@ -1,5 +1,7 @@
 package utcn.labs.sd.bankingservice.domain.data.entity;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,25 +10,33 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Entity
 @Table(name = "client_table")
 public class Client {
+
     @Id
     @Column(name = "SSN")
+    @Size(min = 13, max = 13, message = "Client ssn must be 13 characters long")
     private String ssn;
 
     @Column(name = "firstname")
+    @Size(max=45, message = "First name field cannot be longer than 45 characters")
     private String firstname;
 
     @Column(name = "lastname")
+    @Size(max=45, message = "Last name field cannot be longer than 45 characters")
     private String lastname;
 
     @Column(name = "identity_card_number")
+    @Pattern(regexp = "[A-Z]{2}(\\d{6})")
     private String identityCardNumber;
 
     @Column(name = "address")
+    @Size(max=45, message = "Address field cannot be longer than 45 characters")
     private String address;
 
     @Column(name = "email")
@@ -36,7 +46,6 @@ public class Client {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "client_ssn")
     private List<Account> accountList;
-
 
     public Client() {
 

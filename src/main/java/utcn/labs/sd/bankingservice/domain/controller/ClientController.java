@@ -93,10 +93,10 @@ class ClientController {
     }
 
     @ApiOperation(value = "addAccountToClient", tags = SwaggerTags.CLIENT_TAG)
-    @PostMapping(value = "/account/{clientId}")
-    public ResponseEntity<?> addAccountToClient(@PathVariable("clientId") String clientId, @RequestBody AccountDTO accountDto) {
+    @PostMapping(value = "/account/{clientId}/{accountId}")
+    public ResponseEntity<?> addAccountToClient(@PathVariable("clientId") String clientId, @PathVariable("accountId") Integer accountId) {
         try {
-            clientService.addAccountToClient(clientId, accountDto);
+            clientService.addAccountToClient(clientId, accountId);
             ClientDTO clientDto = clientService.getClientById(clientId);
             return new ResponseEntity<>(clientDto, HttpStatus.OK);
         } catch (Exception e) {
@@ -104,7 +104,7 @@ class ClientController {
         }
     }
 
-    @ApiOperation(value = "getAllClients", tags = SwaggerTags.CLIENT_TAG)
+    @ApiOperation(value = "deleteAccountFromClient", tags = SwaggerTags.CLIENT_TAG)
     @DeleteMapping(value = "/account/{clientId}/{accountId}")
     public ResponseEntity<?> deleteAccountFromClient(@PathVariable("clientId") String clientId, @PathVariable("accountId") int accountId) {
         try {

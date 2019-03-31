@@ -15,7 +15,7 @@ public class EmployeeConverter {
     public static EmployeeDTO toDto(Employee model) {
         EmployeeDTO dto = null;
         if (model != null) {
-            dto = new EmployeeDTO(model.getId(),model.getUsername(),model.getPassword(),model.getFirstName(),model.getLastName(),model.getEmployeeType());
+            dto = new EmployeeDTO(model.getUsername(),model.getPassword(),model.getFirstName(),model.getLastName(),model.getEmployeeType());
         }
         return dto;
     }

@@ -16,7 +16,7 @@ public class AccountConverter {
     public static AccountDTO toDto(Account model) {
         AccountDTO dto = null;
         if (model != null) {
-            dto = new AccountDTO(model.getAccountId(), model.getAccountType(), model.getCreationDate(), model.getBalance());
+            dto = new AccountDTO(model.getAccountType(), model.getBalance());
         }
         return dto;
     }

@@ -1,7 +1,6 @@
 package utcn.labs.sd.bankingservice.domain.data.entity.enums;
 
-public enum AccountType {
-    SAVINGS,
-    CREDIT,
-    EXPENSES
+public enum ReportType {
+    PDF,
+    CSV
 }

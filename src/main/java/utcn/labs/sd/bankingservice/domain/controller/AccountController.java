@@ -52,11 +52,11 @@ class AccountController {
     }
 
     @ApiOperation(value = "updateAccount", tags = SwaggerTags.ACCOUNT_TAG)
-    @PutMapping(value = "/{accountId}")
-    public ResponseEntity<?> updateAccount(@PathVariable("accountId") Integer accountId, @RequestBody AccountDTO accountDto) {
+    @PutMapping(value = "/{accountId}/{newBalance}")
+    public ResponseEntity<?> updateAccount(@PathVariable("accountId") Integer accountId, @PathVariable("newBalance") float newBalance) {
         try {
-            accountService.updateAccount(accountId, accountDto);
-            return new ResponseEntity<>(accountDto, HttpStatus.OK);
+            accountService.updateAccount(accountId, newBalance);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {

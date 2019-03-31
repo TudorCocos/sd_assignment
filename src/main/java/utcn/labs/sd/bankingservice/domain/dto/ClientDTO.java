@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import utcn.labs.sd.bankingservice.domain.data.entity.Account;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -32,7 +33,7 @@ public class ClientDTO {
         this.identityCardNumber = identityCardNumber;
         this.address = address;
         this.email = email;
-        this.accountList = accountList;
+        this.accountList = new ArrayList<Account>();
     }
 
     @JsonProperty("ssn")

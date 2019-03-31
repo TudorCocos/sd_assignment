@@ -4,6 +4,7 @@ package utcn.labs.sd.bankingservice.domain.data.entity;
 import utcn.labs.sd.bankingservice.domain.data.entity.enums.EmployeeType;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="employee_table")
@@ -15,18 +16,23 @@ public class Employee {
     private Integer id;
 
     @Column(name="username")
+    @Size(max=45, message = "Username cannot be longer than 45 characters")
     private String username;
 
     @Column(name="password")
+    @Size(max=128, message = "Password cannot be longer than 128 characters")
     private String password;
 
     @Column(name="first_name")
+    @Size(max=45, message = "First name cannot be longer than 45 characters")
     private String firstName;
 
     @Column(name="last_name")
+    @Size(max=45, message = "Last name cannot be longer than 45 characters")
     private String lastName;
 
     @Column(name="employee_type")
+    @Size(max=45, message = "Employee type field cannot be longer than 45 characters")
     @Enumerated(EnumType.STRING)
     private EmployeeType employeeType;
 

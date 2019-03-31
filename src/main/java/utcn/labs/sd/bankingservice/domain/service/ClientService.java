@@ -25,17 +25,18 @@ public class ClientService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private ActivityService activityService;
+
     public List<ClientDTO> getAllClients() {
-        Timestamp currentTimestamp = new Timestamp(Instant.now().toEpochMilli());
-        Report.addReport(currentTimestamp.toString()+" -- getAllClients -- ");
+        activityService.addNewActivity("getAllClients");
         return ClientConverter.toDto(clientRepository.findAll());
     }
 
     public ClientDTO getClientById(String clientId) throws Exception {
         Client client = clientRepository.findById(clientId).orElse(null);
         if (client == null) throw new NotFoundException("No client found with that clientId");
-        Timestamp currentTimestamp = new Timestamp(Instant.now().toEpochMilli());
-        Report.addReport(currentTimestamp.toString()+" -- getClientById -- ssn:"+client.getSsn());
+        activityService.addNewActivity("getClientById: "+clientId);
         return ClientConverter.toDto(client);
     }
 
@@ -44,10 +45,9 @@ public class ClientService {
                 clientDto.getAddress(), clientDto.getEmail(), clientDto.getAccountList());
         Client possibleAlreadyExistingClient = clientRepository.findById(clientDto.getSsn()).orElse(null);
         if (possibleAlreadyExistingClient == null) {
-            Client newClient = clientRepository.save(client);
-            Timestamp currentTimestamp = new Timestamp(Instant.now().toEpochMilli());
-            Report.addReport(currentTimestamp.toString()+" -- createClient -- ssn:"+newClient.getSsn());
-            return ClientConverter.toDto(newClient);
+            activityService.addNewActivity("createdClient with ssn: "+client.getSsn());
+            clientRepository.save(client);
+            return ClientConverter.toDto(client);
         } else {
             throw new CreateClientException("Client already exists!");
         }
@@ -60,11 +60,10 @@ public class ClientService {
         }
         client.setFirstname(clientDto.getFirstname());
         client.setLastname(clientDto.getLastname());
-        client.setIdentityCardNumber(clientId);
+        client.setIdentityCardNumber(clientDto.getIdentityCardNumber());
         client.setAddress(clientDto.getAddress());
         client.setEmail(clientDto.getEmail());
-        Timestamp currentTimestamp = new Timestamp(Instant.now().toEpochMilli());
-        Report.addReport(currentTimestamp.toString()+" -- changeClient -- ssn:"+client.getSsn());
+        activityService.addNewActivity("changedClient with ssn: "+client.getSsn());
         return ClientConverter.toDto(clientRepository.save(client));
     }
 
@@ -77,26 +76,47 @@ public class ClientService {
         for (Account account : clientListOfAccounts) {
             accountRepository.delete(account);
         }
-        Timestamp currentTimestamp = new Timestamp(Instant.now().toEpochMilli());
-        Report.addReport(currentTimestamp.toString()+" -- deleteClient -- ssn:"+client.getSsn());
+        activityService.addNewActivity("deletedClient with ssn: "+client.getSsn());
         clientRepository.delete(client);
     }
 
-    public ClientDTO addAccountToClient(String clientId, AccountDTO accountDto) {
+    public ClientDTO addAccountToClient(String clientId, Integer accountId) throws Exception {
         Client client = clientRepository.findById(clientId).orElse(null);
-        Timestamp currentTimestamp = new Timestamp(Instant.now().toEpochMilli());
-        Account account = new Account(accountDto.getAccountId(), accountDto.getAccountType(), currentTimestamp.toString(), accountDto.getBalance());
+        if (client == null) {
+            throw new NotFoundException("No client with that clientId");
+        }
+        Account account = accountRepository.findById(accountId).orElse(null);
+        if (account == null) {
+            throw new NotFoundException("No account with that accountId");
+        }
+        if (account.getClient()!=null){
+            throw new Exception("Account already in use by another client");
+        }
         client.getAccountList().add(account);
+        account.setClient(clientId);
         accountRepository.save(account);
-        Report.addReport(currentTimestamp.toString()+" -- addAccountToClient -- ssn:"+client.getSsn()+" accountId:"+account.getAccountId());
+        clientRepository.save(client);
+        activityService.addNewActivity("addedAccount: "+accountId+" toClient: "+clientId);
         return ClientConverter.toDto(client);
     }
 
-    public ClientDTO deleteAccountFromClient(String clientId, Integer accountId) {
+    public ClientDTO deleteAccountFromClient(String clientId, Integer accountId) throws Exception{
         Client client = clientRepository.findById(clientId).orElse(null);
+        if (client == null) {
+            throw new NotFoundException("No client with that clientId");
+        }
+        Account account = accountRepository.findById(accountId).orElse(null);
+        if (account == null) {
+            throw new NotFoundException("No account with that accountId");
+        }
+        if(client.getAccountList().contains(account)){
+            client.getAccountList().remove(account);
+        }else {
+            throw new NotFoundException("This account does not belong to this client. Cannot perform delete");
+        }
         accountRepository.deleteById(accountId);
-        Timestamp currentTimestamp = new Timestamp(Instant.now().toEpochMilli());
-        Report.addReport(currentTimestamp.toString()+" -- deleteAccountFromClient -- ssn:"+client.getSsn()+" accountId:"+accountId);
+        clientRepository.save(client);
+        activityService.addNewActivity("deletedAccount: "+accountId+" fromClient: "+clientId);
         return ClientConverter.toDto(client);
     }
 }

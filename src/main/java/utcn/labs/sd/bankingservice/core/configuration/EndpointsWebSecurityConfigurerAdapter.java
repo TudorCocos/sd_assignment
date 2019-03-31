@@ -2,15 +2,14 @@ package utcn.labs.sd.bankingservice.core.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.sql.DataSource;
@@ -22,21 +21,21 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 public class EndpointsWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
-    @Value("${credentials.employee.username}")
-    private String employeeUsername;
-
-    @Value("${credentials.employee.password}")
-    private String employeePassword;
-
+//    @Value("${credentials.employee.username}")
+//    private String employeeUsername;
+//
+//    @Value("${credentials.employee.password}")
+//    private String employeePassword;
+//
     @Value("${credentials.employee.role}")
     private String employeeRole;
-
-    @Value("${credentials.admin.username}")
-    private String adminUsername;
-
-    @Value("${credentials.admin.password}")
-    private String adminPassword;
-
+//
+//    @Value("${credentials.admin.username}")
+//    private String adminUsername;
+//
+//    @Value("${credentials.admin.password}")
+//    private String adminPassword;
+//
     @Value("${credentials.admin.role}")
     private String adminRole;
 
@@ -57,10 +56,19 @@ public class EndpointsWebSecurityConfigurerAdapter extends WebSecurityConfigurer
                 .password(encoder.encode(this.adminPassword))
                 .roles(adminRole);
          */
-        auth.jdbcAuthentication().passwordEncoder(NoOpPasswordEncoder.getInstance()).dataSource(dataSource)
+        //System.out.println(passwordEncoder().encode("pass"));
+        auth.jdbcAuthentication().dataSource(dataSource)
+                .passwordEncoder(passwordEncoder())
                 .usersByUsernameQuery("select username as principal, password as credentials, true from employee_table where username = ?")
                 .authoritiesByUsernameQuery("select username as principal, employee_type as role from employee_table where username = ?")
                 .rolePrefix("ROLE_");
+
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder;
     }
 
     @Override

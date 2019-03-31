@@ -1,5 +1,6 @@
 package utcn.labs.sd.bankingservice.domain.data.converter;
 
+import utcn.labs.sd.bankingservice.domain.data.entity.Account;
 import utcn.labs.sd.bankingservice.domain.data.entity.Client;
 import utcn.labs.sd.bankingservice.domain.dto.ClientDTO;
 
@@ -15,7 +16,7 @@ public class ClientConverter {
         ClientDTO dto = null;
         if (model != null) {
             dto = new ClientDTO(model.getSsn(), model.getFirstname(), model.getLastname(), model.getIdentityCardNumber(), model.getAddress(),
-                    model.getEmail(), model.getAccountList());
+                    model.getEmail(), new ArrayList<Account>());
         }
         return dto;
     }

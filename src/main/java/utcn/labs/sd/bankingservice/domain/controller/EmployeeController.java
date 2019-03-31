@@ -4,17 +4,18 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utcn.labs.sd.bankingservice.core.configuration.SwaggerTags;
-import utcn.labs.sd.bankingservice.domain.data.entity.Employee;
-import utcn.labs.sd.bankingservice.domain.dto.EmployeeDTO;
+import utcn.labs.sd.bankingservice.domain.data.entity.enums.ReportType;
 import utcn.labs.sd.bankingservice.domain.dto.EmployeeDTO;
 import utcn.labs.sd.bankingservice.domain.service.EmployeeService;
-import utcn.labs.sd.bankingservice.domain.service.Report;
 
-import java.util.Collections;
+import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 
 @Api(tags = {SwaggerTags.BANKING_SERVICE_TAG})
@@ -81,11 +82,29 @@ class EmployeeController {
     }
 
     @ApiOperation(value = "generateReport", tags = SwaggerTags.EMPLOYEE_TAG)
-    @GetMapping(value = "/generateReport")
-    public ResponseEntity<?> deleteEmployee() {
+    @GetMapping(value = "/{fromDate}/{toDate}/{reportType}/{employeeUsername}")
+    public ResponseEntity<?> generateReport(@PathVariable("fromDate") String fromDate, @PathVariable("toDate") String toDate, @PathVariable("reportType") ReportType reportType, @PathVariable("employeeUsername") String employeeUsername) {
         try {
-            Report.createPDF();
-            return new ResponseEntity<String>(HttpStatus.OK);
+            employeeService.generateReport(fromDate,toDate,reportType,employeeUsername);
+            String pathName;
+            String parseMediaType;
+
+            if(reportType.equals(ReportType.PDF)) {
+                pathName = "EmployeeReport.pdf";
+                parseMediaType = "application/pdf";
+            }
+            else {
+                pathName = "EmployeeReport.csv";
+                parseMediaType = "application/csv";
+            }
+            byte[] contents = Files.readAllBytes(new File(pathName).toPath());
+            Files.delete(new File(pathName).toPath());
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setContentType(MediaType.parseMediaType(parseMediaType));
+            httpHeaders.setContentDispositionFormData(pathName, pathName);
+            httpHeaders.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+            return new ResponseEntity<byte[]>(contents, httpHeaders, HttpStatus.OK);
+
         } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
